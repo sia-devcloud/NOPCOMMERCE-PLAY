@@ -45,25 +45,12 @@
           - /var/nopCommerce/bin
           - /var/nopCommerce/logs
         state: directory
-    # - name: adding the nop user
-    #   ansible.builtin.user:
-    #     name: nop
-    #     owner: "{{ owner }}"
-    #     group: "{{ groupname }}"
-    # - name: run the application
-    #   ansible.builtin.shell: "sudo dotnet Nop.Web.dll"
-    # - name: run the application
-    #   command: dotnet Nop.Web.dll --urls "http://0.0.0.0:5000"
-    #   args:
-    #     chdir: /var/nopCommerce
+    
     - name: add the user
       ansible.builtin.user:
         name: nop
         state: present
-    # - name: change group 
-    #   ansible.builtin.group:
-    #     name: /var/nopCommerce
-    #     state: present
+  
     - name: Change file ownership, group and permissions
       ansible.builtin.file:
         path: /var/nopCommerce
