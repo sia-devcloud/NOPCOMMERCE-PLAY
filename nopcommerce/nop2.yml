@@ -1,0 +1,70 @@
+---
+- name: install NopCommerce
+  become: yes
+  hosts: all
+  vars:
+    owner: nopCommerce
+    groupname: nopCommerce
+
+  tasks: 
+    - name: get all the shell files
+      ansible.builtin.command:  "wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb"
+    - name: get all the shell files
+      ansible.builtin.command: "dpkg -i packages-microsoft-prod.deb"
+
+    - name: install asp_dotnet.runtime
+      ansible.builtin.apt:
+        name: 
+          - apt-transport-https
+          - aspnetcore-runtime-7.0
+          - dotnet-sdk-7.0
+          - unzip
+        update_cache: yes
+        state: present
+    - name: Create a directory for nopCommerce
+      ansible.builtin.file:
+        path: /var/nopCommerce
+        state: directory
+        mode: '0755' 
+        recurse: yes
+    - name: change the folder
+      ansible.builtin.shell: 
+        cmd: "cd /var/nopCommerce"
+    - name: download NopCommerce
+      ansible.builtin.get_url:
+        url: "https://dmt-web-demo.s3.ap-south-1.amazonaws.com/nopCommerce_4.60.6_NoSource_linux_x64.zip"
+        dest: "/nopCommerce_4.60.5_NoSource_linux_x64.zip"
+    - name: unzip the NopCommerce
+      ansible.builtin.unarchive:
+        src: /nopCommerce_4.60.5_NoSource_linux_x64.zip
+        dest: /var/nopCommerce
+        remote_src: yes
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: 
+          - /var/nopCommerce/bin
+          - /var/nopCommerce/logs
+        state: directory
+    
+    - name: add the user
+      ansible.builtin.user:
+        name: nop
+        state: present
+  
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /var/nopCommerce
+        owner: nop
+        group: nop
+        mode: '0755'
+    - name: service file for nop
+      ansible.builtin.template:
+        src: templates/nop_service.j2
+        dest: /etc/systemd/system/nopCommerce.service
+    - name: to run the nopCommerce
+      ansible.builtin.service:
+        name: nopCommerce.service
+        enabled: true
+        state: started
+   
+        
