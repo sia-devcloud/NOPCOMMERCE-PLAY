@@ -36,7 +36,7 @@
         dest: "/nopCommerce_4.60.5_NoSource_linux_x64.zip"
     - name: unzip the NopCommerce
       ansible.builtin.unarchive:
-        src: /nopCommerce_4.60.5_NoSource_linux_x64.zip
+        src: "/nopCommerce_4.60.5_NoSource_linux_x64.zip"
         dest: /var/nopCommerce
         remote_src: yes
     - name: Create a directory if it does not exist
